@@ -1,0 +1,7 @@
+# One camera look through Gemini. Returns free text plus a JSON list of objects with headings (ROS sign: +left).
+string prompt
+float32 max_age_s      # 0 = default 0.6; the server waits for a frame newer than this
+---
+bool ok
+string text
+string objects_json    # [{"label":..,"heading_deg":..,"elevation_deg":..,"close":bool,"distance_est_m":float|null,"bbox":[x1,y1,x2,y2]}]

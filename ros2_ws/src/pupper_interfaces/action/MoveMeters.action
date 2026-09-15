@@ -1,0 +1,14 @@
+# Dead-reckoned body-frame translation. Direction fixed at goal start; distance = integrated command * calibration k.
+float32 dx             # metres, +forward
+float32 dy             # metres, +left
+float32 speed_mps      # 0 = server default (0.45 m/s); floor 0.35 (policy does not translate below that)
+bool hold_heading      # true = P-hold the IMU yaw captured at goal start
+---
+bool success
+string reason
+float32 moved_m
+float32 sigma_m        # honest 1-sigma of moved_m
+float32 heading_drift_deg
+---
+float32 remaining_m
+float32 moved_m

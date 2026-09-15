@@ -1,0 +1,16 @@
+# Phase B. Lock onto a person track and keep it at target_range_m. Open-ended until cancelled/lost/safety.
+string name            # "" = nearest/largest unnamed person; otherwise an enrolled name
+int32 track_id         # -1 = choose by name/nearest; >= 0 = follow this exact /perception/tracks id
+float32 target_range_m # 0 = default 1.2
+float32 timeout_s      # 0 = no timeout
+---
+string outcome         # CANCELLED | LOST | ESTOP | TELEOP | CONTROLLER_INACTIVE | TIMEOUT | NO_TARGET
+float32 duration_s
+---
+bool has_lock
+string phase           # LOCKED | COASTING | SEARCHING
+int32 track_id
+string target_name
+float32 heading_deg
+float32 range_est_m
+float32 lost_s

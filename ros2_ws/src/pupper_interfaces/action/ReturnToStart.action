@@ -1,0 +1,12 @@
+# GoToPose to the mark named "start" (set by the plan executor when a plan begins).
+bool restore_heading
+---
+bool success
+string reason
+float32 distance_error_m
+float32 sigma_m
+float32 yaw_error_deg
+---
+string phase
+float32 remaining_m
+float32 remaining_deg
