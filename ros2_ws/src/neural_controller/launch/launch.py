@@ -285,6 +285,22 @@ def generate_launch_description():
         parameters=[node_parameters],
     )
 
+    motion_server_node = Node(
+        package="pupper_motion",
+        executable="motion_server",
+        # no name= here: a launch-level rename applies to every node in the process (motion_server also owns motion_server_imu)
+        output="both",
+        parameters=[node_parameters],
+    )
+
+    plan_executor_node = Node(
+        package="pupper_planner",
+        executable="plan_executor",
+        # no name= here: a launch-level rename applies to every node in the process (motion_server also owns motion_server_imu)
+        output="both",
+        parameters=[node_parameters],
+    )
+
     #
     # 7. Put them all together
     #
@@ -315,6 +331,9 @@ def generate_launch_description():
         hailo_detection_node,
         # Person following
         person_following_node,
+        # Pupper brain: closed-loop motion + plan executor
+        motion_server_node,
+        plan_executor_node,
     ]
 
     #

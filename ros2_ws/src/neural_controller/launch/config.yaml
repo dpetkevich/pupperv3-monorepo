@@ -174,7 +174,39 @@ joint_state_broadcaster:
 cmd_vel_mux:
   ros__parameters:
     deadband: 0.05
-    joystick_timeout_ms: 500
+    timeout_ms: 500
+    # Priority order (first = highest). Any message on a non-teleop input, even zeros, counts as active for timeout_ms.
+    inputs: ["/teleop_cmd_vel", "/reflex_cmd_vel", "/motion_cmd_vel", "/llm_cmd_vel", "/person_following_cmd_vel"]
+
+motion_server:
+  ros__parameters:
+    cmd_topic: "/motion_cmd_vel"
+    higher_priority_sources: ["/teleop_cmd_vel", "/reflex_cmd_vel"]
+    auto_activate: true
+    activation_settle_s: 2.5
+    # Dead-reckoning calibration: run `ros2 run pupper_motion calibrate_k --write <this file>`
+    k_vx: 1.0
+    k_vy: 1.0
+    lag_tau: 0.3
+    sigma_frac: 0.35
+    # Heading fusion: 0.02 = complementary filter on the fused rotation vector; 0.0 = gyro only
+    yaw_alpha: 0.02
+    turn_speed_dps: 70.0
+    move_speed: 0.45
+    vx_floor: 0.35
+    vy_floor: 0.4
+
+plan_executor:
+  ros__parameters:
+    google_api_key_file: "/home/pi/pupperv3-monorepo/ai/llm-ui/agent-starter-python/.env.local"
+    equirect_width: 800
+    equirect_height: 720
+    h_fov_deg: 180.0
+    v_fov_deg: 180.0
+    camera_height_m: 0.2
+    look_settle_s: 0.4
+    look_max_age_s: 0.6
+    animate_wait_s: 8.0
 
 joy_util_node:
   ros__parameters:

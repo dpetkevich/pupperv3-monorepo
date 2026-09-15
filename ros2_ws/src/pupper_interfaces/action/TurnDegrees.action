@@ -1,0 +1,11 @@
+# Closed-loop yaw turn using the IMU. ROS/REP-103 sign: positive = left (counter-clockwise from above).
+float32 degrees        # |degrees| <= 360
+float32 speed_dps      # 0 = server default (70 deg/s); clamped to the trained envelope
+---
+bool success
+string reason          # "" | BUSY | ESTOP | INVALID | CANCELLED | TELEOP_TAKEOVER | CONTROLLER_INACTIVE | IMU_STALE | STALLED | FALLEN | TIMEOUT
+float32 turned_degrees # signed, from the IMU
+float32 error_degrees  # goal - turned (wrapped)
+---
+float32 remaining_degrees
+float32 turned_degrees

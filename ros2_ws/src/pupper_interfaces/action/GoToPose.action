@@ -1,0 +1,16 @@
+# Turn -> move -> optional final turn to a pose in the "start" mark frame or the odom frame.
+float32 x
+float32 y
+float32 yaw_deg
+string frame           # "start" | "odom"
+bool final_turn        # rotate to yaw_deg after arriving
+---
+bool success
+string reason
+float32 distance_error_m
+float32 sigma_m
+float32 yaw_error_deg
+---
+string phase           # TURN | MOVE | FINAL_TURN
+float32 remaining_m
+float32 remaining_deg

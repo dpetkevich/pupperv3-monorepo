@@ -1,0 +1,8 @@
+string name
+int32 track_id         # -1 = frontmost person
+float32 duration_s     # 0 = default 3
+---
+bool success
+string message
+int32 samples
+float32 min_separation # smallest cosine distance to any other enrolled person (warn if small)

@@ -1,0 +1,17 @@
+# Run a Plan JSON v1 document (see share/pupper_interfaces/schema/plan_v1.json).
+# Goal accept/reject returns in < 50 ms: the server only validates and enqueues.
+string plan_json
+---
+string outcome         # SUCCEEDED | FAILED | CANCELLED | REJECTED
+int32 failed_step      # index into steps, -1 if none
+string reason          # machine-ish reason (schema error, child action reason, ...)
+string summary         # <= ~2 sentences, speakable, written by the executor from action results
+string state_json      # snapshot of ExecutorState at completion
+bool replan_allowed    # true if the LLM may submit exactly one replan_of this plan
+---
+int32 step_index
+int32 step_count
+string skill
+string phase
+string message
+string state_json

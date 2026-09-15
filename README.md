@@ -1,5 +1,17 @@
 # Pupper V3 Codebase
 
+> **This fork (branch `pupper-brain`): a rewrite of how Pupper takes commands.**
+>
+> Stock Pupper lets a cloud LLM drive the motors directly with timed velocity pushes and no feedback, so
+> "walk to the bed and back" stops halfway, "turn around" becomes a 1080° spin, and "find me" does nothing.
+> This branch gives the robot its own brain: the LLM only *compiles* a spoken request into a short plan,
+> and an on-robot executor carries it out step by step with closed-loop turns (IMU), dead-reckoned moves
+> with honest error bars, return-to-start, camera search, and a safety monitor. The robot reports what it
+> actually did; the voice only relays that.
+>
+> Read [`docs/pupper-brain.md`](docs/pupper-brain.md) for the architecture, how to run it off-robot in
+> Docker, how to deploy to the Pi, and what is still to come (person tracking with identity, keyword reflexes).
+
 # Deploying to real robot
 Follow instructions here https://pupper-v3-documentation.readthedocs.io/en/latest/guide/software_installation.html to flash your Raspberry Pi 5 with our custom image.
 

@@ -1,0 +1,13 @@
+# Dev/build container for the Pupper brain packages (no Hailo, no hardware).
+# Build:  docker build -t pupper-ros-dev -f ros2_ws/docker/Dockerfile.dev ros2_ws/docker
+# Use:    ros2_ws/docker/dev.sh colcon build --packages-select pupper_interfaces pupper_motion pupper_vision pupper_planner
+FROM ros:jazzy-ros-base
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip python3-pytest python3-numpy python3-opencv python3-yaml python3-pil python3-jsonschema \
+    ros-jazzy-vision-msgs ros-jazzy-controller-manager-msgs ros-jazzy-nav-msgs ros-jazzy-std-srvs \
+    ros-jazzy-sensor-msgs ros-jazzy-geometry-msgs ros-jazzy-action-msgs ros-jazzy-ament-index-python \
+    ros-jazzy-rclpy ros-jazzy-rosidl-default-generators ros-jazzy-tf-transformations \
+    && rm -rf /var/lib/apt/lists/*
+RUN pip3 install --break-system-packages --no-cache-dir google-genai || true
+WORKDIR /ws

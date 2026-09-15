@@ -11,6 +11,7 @@ requires-python = ">=3.9"
 dependencies = [
     "livekit-agents[cartesia,deepgram,elevenlabs,google,openai,silero,turn-detector]~=1.2",
     "python-dotenv",
+    "jsonschema>=4",
 ]
 
 [dependency-groups]

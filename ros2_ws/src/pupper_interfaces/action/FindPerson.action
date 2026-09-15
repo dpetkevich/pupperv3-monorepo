@@ -1,0 +1,12 @@
+# Phase B. Rotate in steps until a (named) person is seen; optionally hand over to FollowPerson.
+string name            # "" = anyone
+float32 max_search_deg # 0 = 360
+bool then_follow
+---
+bool found
+int32 track_id
+float32 heading_deg
+string outcome         # FOUND | NOT_FOUND | CANCELLED | ESTOP | TELEOP | CONTROLLER_INACTIVE
+---
+string phase
+float32 searched_deg

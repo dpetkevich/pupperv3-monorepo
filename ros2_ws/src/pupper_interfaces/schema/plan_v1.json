@@ -1,0 +1,658 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "$id": "pupper_interfaces/plan_v1.json",
+ "title": "Pupper Plan v1",
+ "description": "A plan compiled by the LLM (or a reflex) and executed step-by-step by plan_executor. Sign convention is ROS/REP-103: turn.degrees > 0 = left, move.lateral_m > 0 = left.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "v",
+  "steps"
+ ],
+ "properties": {
+  "v": {
+   "const": 1
+  },
+  "goal": {
+   "type": "string",
+   "maxLength": 200
+  },
+  "mode": {
+   "enum": [
+    "replace",
+    "queue"
+   ],
+   "default": "replace"
+  },
+  "source": {
+   "enum": [
+    "llm",
+    "reflex",
+    "cli"
+   ],
+   "default": "llm"
+  },
+  "replan_of": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "on_fail": {
+   "enum": [
+    "report",
+    "return_to_start_then_report"
+   ],
+   "default": "report"
+  },
+  "steps": {
+   "type": "array",
+   "minItems": 1,
+   "maxItems": 12,
+   "items": {
+    "oneOf": [
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,16}$"
+       },
+       "skill": {
+        "const": "turn"
+       },
+       "args": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "degrees": {
+          "type": "number",
+          "minimum": -360,
+          "maximum": 360
+         },
+         "speed_dps": {
+          "type": "number",
+          "minimum": 20,
+          "maximum": 120
+         }
+        },
+        "required": [
+         "degrees"
+        ]
+       },
+       "timeout_s": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 120
+       }
+      },
+      "required": [
+       "id",
+       "skill"
+      ]
+     },
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,16}$"
+       },
+       "skill": {
+        "const": "move"
+       },
+       "args": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "meters": {
+          "type": "number",
+          "minimum": -5,
+          "maximum": 5
+         },
+         "lateral_m": {
+          "type": "number",
+          "minimum": -5,
+          "maximum": 5
+         },
+         "speed_mps": {
+          "type": "number",
+          "minimum": 0.35,
+          "maximum": 0.75
+         }
+        },
+        "required": [
+         "meters"
+        ]
+       },
+       "timeout_s": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 120
+       },
+       "until": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "object_close": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+           "label": {
+            "type": "string"
+           },
+           "distance_m": {
+            "type": "number",
+            "minimum": 0.4,
+            "maximum": 3.0
+           }
+          },
+          "required": [
+           "label"
+          ]
+         }
+        },
+        "required": [
+         "object_close"
+        ]
+       }
+      },
+      "required": [
+       "id",
+       "skill"
+      ]
+     },
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,16}$"
+       },
+       "skill": {
+        "const": "go_to_pose"
+       },
+       "args": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "x": {
+          "type": "number",
+          "minimum": -15,
+          "maximum": 15
+         },
+         "y": {
+          "type": "number",
+          "minimum": -15,
+          "maximum": 15
+         },
+         "yaw_deg": {
+          "type": "number",
+          "minimum": -360,
+          "maximum": 360
+         },
+         "frame": {
+          "enum": [
+           "start",
+           "odom"
+          ]
+         }
+        },
+        "required": [
+         "x",
+         "y"
+        ]
+       },
+       "timeout_s": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 120
+       }
+      },
+      "required": [
+       "id",
+       "skill"
+      ]
+     },
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,16}$"
+       },
+       "skill": {
+        "const": "return_to_start"
+       },
+       "args": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "restore_heading": {
+          "type": "boolean"
+         }
+        },
+        "required": []
+       },
+       "timeout_s": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 120
+       }
+      },
+      "required": [
+       "id",
+       "skill"
+      ]
+     },
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,16}$"
+       },
+       "skill": {
+        "const": "go_to_object"
+       },
+       "args": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+         },
+         "stop_distance_m": {
+          "type": "number",
+          "minimum": 0.4,
+          "maximum": 3.0
+         },
+         "max_iterations": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+         },
+         "search": {
+          "type": "boolean"
+         }
+        },
+        "required": [
+         "label"
+        ]
+       },
+       "timeout_s": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 120
+       }
+      },
+      "required": [
+       "id",
+       "skill"
+      ]
+     },
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,16}$"
+       },
+       "skill": {
+        "const": "find_object"
+       },
+       "args": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+         },
+         "search_step_deg": {
+          "type": "number",
+          "minimum": 30,
+          "maximum": 120
+         }
+        },
+        "required": [
+         "label"
+        ]
+       },
+       "timeout_s": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 120
+       }
+      },
+      "required": [
+       "id",
+       "skill"
+      ]
+     },
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,16}$"
+       },
+       "skill": {
+        "const": "look"
+       },
+       "args": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "prompt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+         }
+        },
+        "required": [
+         "prompt"
+        ]
+       },
+       "timeout_s": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 120
+       }
+      },
+      "required": [
+       "id",
+       "skill"
+      ]
+     },
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,16}$"
+       },
+       "skill": {
+        "const": "wait"
+       },
+       "args": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "seconds": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 30
+         }
+        },
+        "required": [
+         "seconds"
+        ]
+       },
+       "timeout_s": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 120
+       }
+      },
+      "required": [
+       "id",
+       "skill"
+      ]
+     },
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,16}$"
+       },
+       "skill": {
+        "const": "say"
+       },
+       "args": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+         }
+        },
+        "required": [
+         "text"
+        ]
+       },
+       "timeout_s": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 120
+       }
+      },
+      "required": [
+       "id",
+       "skill"
+      ]
+     },
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,16}$"
+       },
+       "skill": {
+        "const": "animate"
+       },
+       "args": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+         }
+        },
+        "required": [
+         "name"
+        ]
+       },
+       "timeout_s": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 120
+       }
+      },
+      "required": [
+       "id",
+       "skill"
+      ]
+     },
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,16}$"
+       },
+       "skill": {
+        "const": "relax"
+       },
+       "args": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {},
+        "required": []
+       },
+       "timeout_s": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 120
+       }
+      },
+      "required": [
+       "id",
+       "skill"
+      ]
+     },
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,16}$"
+       },
+       "skill": {
+        "const": "stop"
+       },
+       "args": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {},
+        "required": []
+       },
+       "timeout_s": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 120
+       }
+      },
+      "required": [
+       "id",
+       "skill"
+      ]
+     },
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,16}$"
+       },
+       "skill": {
+        "const": "find_person"
+       },
+       "args": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "who": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+         }
+        },
+        "required": [
+         "who"
+        ]
+       },
+       "timeout_s": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 120
+       }
+      },
+      "required": [
+       "id",
+       "skill"
+      ]
+     },
+     {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+       "id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9_-]{1,16}$"
+       },
+       "skill": {
+        "const": "follow_person"
+       },
+       "args": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+         "who": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+         },
+         "target_range_m": {
+          "type": "number",
+          "minimum": 0.8,
+          "maximum": 3.0
+         }
+        },
+        "required": [
+         "who"
+        ]
+       },
+       "timeout_s": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 120
+       },
+       "until": {
+        "oneOf": [
+         {
+          "const": "cancelled"
+         },
+         {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+           "time_s": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 300
+           }
+          },
+          "required": [
+           "time_s"
+          ]
+         },
+         {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+           "lost_for_s": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 60
+           }
+          },
+          "required": [
+           "lost_for_s"
+          ]
+         }
+        ]
+       }
+      },
+      "required": [
+       "id",
+       "skill"
+      ]
+     }
+    ]
+   }
+  }
+ }
+}
